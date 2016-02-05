@@ -8,6 +8,7 @@ var hyperrequest = require("hyperrequest")
 var concat = require("concat-stream")
 var settings = require('./settings')
 var rimraf = require('rimraf');
+var pad = require('pad');
 
 var multilevel = require('multilevel');
 var net = require('net');
@@ -64,7 +65,7 @@ tape("Store value", function (t) {
       })
     },
 
-    // create the server
+    // create the client
     function(next){
       createClient(function(err, c){
         if(err) return next(err)
@@ -134,7 +135,7 @@ tape("Update value", function (t) {
       })
     },
 
-    // create the server
+    // create the client
     function(next){
       createClient(function(err, c){
         if(err) return next(err)
@@ -212,7 +213,7 @@ tape("Range query", function (t) {
       })
     },
 
-    // create the server
+    // create the client
     function(next){
       createClient(function(err, c){
         if(err) return next(err)
@@ -224,8 +225,8 @@ tape("Range query", function (t) {
     // set some values
     function(next){
       for(i=1;i<=10;i++)
-        client.db.put(test_key+i, test_value, function (err) {
-          if (err) next(err.toString());
+        client.db.put(test_key+pad(5, ""+i,"0"), test_value, function (err) {
+          if (err) return next(err.toString())
         })
 
       next()
@@ -237,7 +238,7 @@ tape("Range query", function (t) {
       var found_values = {}
       var upper_limit = 5
 
-      client.db.createReadStream({gte:test_key+upper_limit})
+      client.db.createReadStream({lte:test_key+pad(5, ""+upper_limit,"0")})
       .on('data', function (data) {
         found_values[data.key] = data.value
       })
@@ -255,14 +256,7 @@ tape("Range query", function (t) {
 
 
   ], function(err){
-    if(err){
-      t.error(err)
-      //client.db.close()
-      //server.db.close()
-      //server.con.close()
-      t.end()
-      return
-    }
+    if(err) t.error(err)
     client.db.close()
     server.db.close()
     server.con.close()
