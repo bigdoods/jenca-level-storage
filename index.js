@@ -1,6 +1,5 @@
 var path = require('path')
 var http = require('http')
-var settings = require('./settings')
 
 var multilevel = require('multilevel');
 var net = require('net');
