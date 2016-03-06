@@ -12,13 +12,21 @@ var args = require('minimist')(process.argv, {
     d:'datafile'
   },
   default:{
-    port:process.env.PORT || 80,
-    datafile:process.env.DATAFILE || settings.defaultFilePath
+    port:process.env.PORT || 3000,
+    datafile:process.env.DATAFILE || '/tmp/leveldb'
   }
 })
 
-var db = level(settings.datafile);
+var db = level(args.datafile);
 
 net.createServer(function (con) {
   con.pipe(multilevel.server(db)).pipe(con);
-}).listen(settings.port);
+}).listen(args.port, function(err){
+  if(err){
+    console.error(err)
+    process.exit(1)
+  }
+  else{
+    console.log('server listening on: ' + args.port)
+  }
+});
