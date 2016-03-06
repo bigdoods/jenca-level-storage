@@ -22,6 +22,7 @@
     "from2-string": "^1.1.0",
     "hyperquest": "^1.2.0",
     "hyperrequest": "0.0.4",
+    "pad": "^1.0.0",
     "tape": "^4.3.0"
   },
   "dependencies": {
@@ -29,8 +30,7 @@
     "http-hash-router": "^1.1.0",
     "minimist": "^1.2.0",
     "uuid": "^2.0.1",
-    "multilevel":"^7.3.0",
-    "net":"^1.0.2",
-    "level":"^1.4.0"
+    "multilevel": "^7.3.0",
+    "level": "^1.4.0"
   }
 }

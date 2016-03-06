@@ -224,17 +224,19 @@ tape("Range query", function (t) {
 
     // set some values
     function(next){
-      for(i=1;i<=10;i++)
-        client.db.put(test_key+pad(5, ""+i,"0"), test_value, function (err) {
-          if (err) return next(err.toString())
-        })
-
-      next()
+      var nums = []
+      for(i=1;i<=10;i++){ nums.push(i) }
+      async.series(nums.map(function(i){
+        return function(nextnum){
+          client.db.put(test_key+pad(5, ""+i,"0"), test_value, nextnum)
+        }
+      }), next)
     },
 
     // read the values
     function(next){
 
+      var nextCalled = false
       var found_values = {}
       var upper_limit = 5
 
@@ -243,11 +245,12 @@ tape("Range query", function (t) {
         found_values[data.key] = data.value
       })
       .on('error', function (err) {
-        next(err)
+        if(!nextCalled) next(err)
       })
       .on('end', function () {
         console.dir(found_values)
         t.equal(Object.keys(found_values).length, upper_limit, upper_limit + " values found")
+        nextCalled = true
         next()
       })
     },
